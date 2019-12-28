@@ -1,25 +1,35 @@
 <template>
   <div class="hello">
         <h1>Listado de convocatorias</h1>
+        <!-- Creates a Calls list -->
         <ul id="calls">
-          <li v-bind:key="k" v-for="(call, k) in calls">
+          <!-- Iterates on Calls model -->
+          <li v-bind:key="call.id" v-for="(call) in calls">
             <h2>{{call.name}}</h2>
             <p>{{ call.description }}</p>
+            <!-- For each call creates a Merits list -->
             <ul>
+              <!-- iterates on Merits model for each Call and sorts them-->
               <li v-bind:key="i" v-for="(merit, i) in merits
                 .filter(x => x.callId === call.id)
                 .sort(function(a,b){return Number(a.name.split(' ')[1]) - Number(b.name.split(' ')[1])} )">
                 <h3>{{ merit.name }}</h3>
                 <span class="score" v-text="merit.score * factor"></span>
-                <div class="total-score">
+                <div class="total-container">
                   <h4 class="total-heading">TotalScore</h4>
-                  <span class="score-factor" v-text="factor"></span>
-                  <input class="score-input" v-model="merit.score" placeholder="User score"/>
+                  <!-- Places total score for responsiveness -->
+                  <div class="total-score">
+                    <label class="score-factor" v-text="factor" :for="'merit_' + call.id + '_' + i"></label>
+                    <input :id="'merit_' + call.id + '_' + i" class="score-input" type="number" v-model.number="merit.score" placeholder="User score"/>
+                  </div>
                 </div>
               </li>
             </ul>
           </li>
         </ul>
+        <div class="save-button">
+          <button>Guardar</button>
+        </div>
   </div>
 </template>
 
@@ -37,7 +47,7 @@ export default {
     }
   },
   mounted () {
-    // Configure axios instance for saviatest server
+    // Configures axios instance for saviatest server
     const axiosInstance = axios.create({
       baseURL: 'https://saviatest.azurewebsites.net/api'
     })
@@ -47,8 +57,8 @@ export default {
       axiosInstance.get('/Merits')
     ])
       .then(response => {
-        console.log('Calls', response[0].data)
-        console.log('Merits', response[1].data)
+        // console.log('Calls', response[0].data)
+        // console.log('Merits', response[1].data)
         this.calls = response[0].data
         this.merits = response[1].data
       })
@@ -68,9 +78,23 @@ h1{
   font-size: 2.2rem;
 }
 h3 {
-  width: 50%;
   text-align: left;
-  padding: 1rem;
+  padding: 0;
+}
+ul{
+  list-style-type: none;
+  padding: 0;
+  box-sizing: border-box;
+}
+.save-button{
+  button{
+    background-color: #333;
+    color: #fff;
+    font-size: 1.7em;
+    padding: .5em 1em;
+    width: 100%;
+    border: 0;
+  }
 }
 @media screen and (min-width: 990px){
   h1{
@@ -80,18 +104,29 @@ h3 {
     margin: .5em auto;
     padding: 0;
   }
+  .save-button{
+    width:75%;
+    margin: 1.5em auto;
+    button{
+      width: auto;
+      float: right;
+      border-radius: .2em;
+      cursor: pointer;
+    }
+  }
 }
-ul {
-  list-style-type: none;
-  padding: 0;
-  box-sizing: border-box;
-  &#calls{
+  #calls{
+    // width: 100%;
+    margin-bottom: 0;
     &>li{
       width: 100%;
       box-sizing: border-box;
       background-color: #ededed;
       padding: 1rem;
       margin-bottom: 1.5rem;
+      &:last-child{
+        margin-bottom: 0;
+      }
       h2{
         text-align: left;
         width: 100%;
@@ -106,6 +141,8 @@ ul {
       & > ul {
         & > li{
           width: 100%;
+          padding: 1em;
+          box-sizing: border-box;
           background-color: #9e9e9e;
           margin-bottom: 1rem;
           display: grid;
@@ -114,22 +151,56 @@ ul {
           justify-content: space-between;
           &:nth-child(odd) { background: #dbdbdb; }
           h3{
-            margin-top:0;
+            margin: 0 0 1.2em 0;
           }
           span.score {
             max-width: 40%;
             font-size: 1.2em;
             text-align: right;
-            margin: .8em 1.5em .8em auto;
+            margin: 0 0 0 auto;
+            max-width: 60%;
             &:after{
             content: "puntos";
             margin-left: .5em;
+            }
           }
+          .total-container{
+            display: grid;
+            grid-template-columns: 100%;
+            grid-column-end: span 2;
+          }
+          h4{
+            text-align: left;
+            font-size: 1.17em;
+            padding: 0;
+            margin: 0;
+            font-weight: normal;
+          }
+          .total-score{
+            border-width: 0px;
+            text-align: left;
+            margin: 1em auto 0 auto;
+            max-width: calc( 100% - 2em);
+            .score-factor{
+              font-size: 1.7em;
+              margin-left: 1em;
+              &:after{
+                content: '*';
+                margin: 0 .4em;
+              }
+            }
+            .score-input{
+              border: 0;
+              font-size: 1.17em;
+              padding: .3em .5em;
+              max-width: 50%;
+            }
           }
         }
       }
     }
   }
+
   @media screen and (min-width: 990px){
     &#calls{
       display:flex;
@@ -145,8 +216,7 @@ ul {
       & > li{
         width: 75%;
         padding: 3rem;
-        & > ul {
-          display: grid;
+        & > ul {          display: grid;
           width: 100%;
           grid-template-columns: 50% 50%;
           align-items: start;
@@ -156,25 +226,38 @@ ul {
             width: calc( 100% - 2rem);
             background-color: #dbdbdb;
             margin-bottom: 2rem;
+            grid-template-columns: 35% 65%;
+            padding: 1em 2em;
             &:nth-child(even) {
               margin-left: auto;
             }
             h3{
-              font-size: 1.7em;
+              font-size: 1.5em;
               margin-top: 0;
               width: 100%;
             }
-          span.score {
-            max-width: 40%;
-            font-size: 1.2em;
-            text-align: right;
-            margin: 1.15em 1.5em .8em auto;
-           }
+            .total-container{
+              display: flex;
+              margin: 0;
+            }
+            h4{
+              font-size: 1.5em;
+              max-width: auto;
+            }
+            .total-score{
+              max-width: auto;
+              margin: 0 0 1em 0;
+              .score-factor{
+                &:before{
+                  content: '=';
+                  position: relative;
+                  left: -0.5em;
+                }
+              }
+            }
           }
         }
       }
     }
   }
-
-}
 </style>
