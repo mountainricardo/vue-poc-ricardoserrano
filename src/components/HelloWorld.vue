@@ -96,16 +96,16 @@ ul{
     border: 0;
   }
 }
-@media screen and (min-width: 990px){
+@media screen and (min-width: 1024px){
   h1{
     text-align: left;
-    width: 75%;
+    width: 77%;
     font-size: 3rem;
     margin: .5em auto;
     padding: 0;
   }
   .save-button{
-    width:75%;
+    width:77%;
     margin: 1.5em auto;
     button{
       width: auto;
@@ -201,7 +201,7 @@ ul{
     }
   }
 
-  @media screen and (min-width: 990px){
+  @media screen and (min-width: 1024px){
     &#calls{
       display:flex;
       align-items: center;
@@ -214,8 +214,8 @@ ul{
         font-size: 1.5em;
       }
       & > li{
-        width: 75%;
-        padding: 3rem;
+        width: 77%;
+        padding: 1.5rem 1.56%;
         & > ul {          display: grid;
           width: 100%;
           grid-template-columns: 50% 50%;
@@ -223,11 +223,11 @@ ul{
           justify-content: space-between;
 
           & > li{
-            width: calc( 100% - 2rem);
+            width: 98.4%;
             background-color: #dbdbdb;
             margin-bottom: 2rem;
             grid-template-columns: 35% 65%;
-            padding: 1em 2em;
+            padding: 1em 4%;
             &:nth-child(even) {
               margin-left: auto;
             }
