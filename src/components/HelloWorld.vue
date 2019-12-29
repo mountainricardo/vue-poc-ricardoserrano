@@ -59,11 +59,53 @@ export default {
       .then(response => {
         // console.log('Calls', response[0].data)
         // console.log('Merits', response[1].data)
-        this.calls = response[0].data
-        this.merits = response[1].data
+        this.calls = response[0].data.slice()
+        this.merits = this.buildMerits(
+          response[0].data.slice(),
+          response[1].data.slice()
+        )
       })
   },
   methods: {
+    buildMerits: (callsArray, meritsArray) => {
+      const allCallsMerits = []
+
+      callsArray.forEach(call => {
+        // fulfill each call filtered and duplicates reduced merits array
+        const callMerits = meritsArray
+          .filter((x) => x.callId === call.id)
+          .reduce((accumulator, merit) => {
+            const name = merit.name
+            const found = accumulator.find((elem) => {
+              return elem.name === name
+            })
+            if (found) found.score += merit.score
+            else accumulator.push(merit)
+            return accumulator
+          }, [])
+
+        // build 4 merits array for each call
+        for (let j = 0; j < 4; j++) {
+          const meritIndex = callMerits.findIndex(
+            (el) => el.name === ('Merito ' + (j + 1))
+          )
+          if (meritIndex < 0) {
+            // creates an empty merit for this index and push it into allCallsMerits array
+            allCallsMerits.push({
+              callId: call.id,
+              name: 'Merito ' + (j + 1),
+              score: null,
+              userScore: null,
+              totalScore: null
+            })
+          } else {
+            allCallsMerits.push(callMerits[meritIndex])
+          }
+        }
+      })
+
+      return allCallsMerits
+    }
   }
 }
 </script>
@@ -116,7 +158,10 @@ ul{
   }
 }
   #calls{
-    // width: 100%;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
     margin-bottom: 0;
     &>li{
       width: 100%;
@@ -203,10 +248,6 @@ ul{
 
   @media screen and (min-width: 1024px){
     &#calls{
-      display:flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
       h2{
         font-size: 2.2em;
       }
