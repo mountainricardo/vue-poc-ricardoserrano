@@ -42,8 +42,7 @@ export default {
     return {
       calls: [],
       merits: [],
-      factor: 2,
-      response: ''
+      factor: 2
     }
   },
   mounted () {
