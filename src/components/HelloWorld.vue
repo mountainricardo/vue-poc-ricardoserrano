@@ -55,16 +55,15 @@ export default {
     axios.all([
       axiosInstance.get('/Calls'),
       axiosInstance.get('/Merits')
-    ])
-      .then(response => {
-        // console.log('Calls', response[0].data)
-        // console.log('Merits', response[1].data)
-        this.calls = response[0].data.slice()
-        this.merits = this.buildMerits(
-          response[0].data.slice(),
-          response[1].data.slice()
-        )
-      })
+    ]).then(response => {
+      // console.log('Calls', response[0].data)
+      // console.log('Merits', response[1].data)
+      this.calls = response[0].data.slice()
+      this.merits = this.buildMerits(
+        response[0].data.slice(),
+        response[1].data.slice()
+      )
+    })
   },
   methods: {
     buildMerits: (callsArray, meritsArray) => {
@@ -73,17 +72,15 @@ export default {
       callsArray.forEach(call => {
         // fulfill each call filtered and duplicates reduced merits array
         const callMerits = meritsArray
-          .filter((x) => x.callId === call.id)
+          .filter((merit) => merit.callId === call.id)
           .reduce((accumulator, merit) => {
-            const name = merit.name
             const found = accumulator.find((elem) => {
-              return elem.name === name
+              return elem.name === merit.name
             })
             if (found) found.score += merit.score
             else accumulator.push(merit)
             return accumulator
           }, [])
-
         // build 4 merits array for each call
         for (let j = 0; j < 4; j++) {
           const meritIndex = callMerits.findIndex(
@@ -103,7 +100,6 @@ export default {
           }
         }
       })
-
       return allCallsMerits
     }
   }
@@ -127,6 +123,11 @@ ul{
   list-style-type: none;
   padding: 0;
   box-sizing: border-box;
+  li{
+    width: 100%;
+    padding: 1em;
+    box-sizing: border-box;
+  }
 }
 .save-button{
   button{
@@ -164,10 +165,7 @@ ul{
     flex-direction: column;
     margin-bottom: 0;
     &>li{
-      width: 100%;
-      box-sizing: border-box;
       background-color: #ededed;
-      padding: 1rem;
       margin-bottom: 1.5rem;
       &:last-child{
         margin-bottom: 0;
@@ -185,11 +183,8 @@ ul{
       }
       & > ul {
         & > li{
-          width: 100%;
-          padding: 1em;
-          box-sizing: border-box;
           background-color: #9e9e9e;
-          margin-bottom: 1rem;
+          margin-bottom: 1em;
           display: grid;
           grid-template-columns: 50% 50%;
           align-items: start;
@@ -266,7 +261,7 @@ ul{
           & > li{
             width: 98.4%;
             background-color: #dbdbdb;
-            margin-bottom: 2rem;
+            margin-bottom: 2em;
             grid-template-columns: 35% 65%;
             padding: 1em 4%;
             &:nth-child(even) {
